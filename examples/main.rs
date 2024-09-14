@@ -8,6 +8,8 @@ use trustfall_pandascore_adapter::Adapter;
 const QUERY: &str = include_str!("query.graphql");
 
 fn main() -> anyhow::Result<()> {
+    env_logger::init();
+
     let token = std::env::var("PANDASCORE_TOKEN").context("PANDASCORE_TOKEN missing")?;
     let max_results = std::env::args()
         .nth(1)

@@ -62,7 +62,11 @@ impl<T: ClientTransport> AdapterInner<T> {
     where
         R: pandascore::endpoint::Endpoint + std::fmt::Debug,
     {
-        eprintln!("Executing request: {:?}", request);
+        #[cfg(feature = "log")]
+        {
+            log::debug!("Executing request: {request:?}");
+        }
+
         let res = self.runtime.block_on(self.client.execute(request));
         match res {
             Ok(r) => Some(r),
