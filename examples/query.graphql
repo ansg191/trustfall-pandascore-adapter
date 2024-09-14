@@ -1,0 +1,42 @@
+{
+    Leagues(game: "lol") {
+#        id @output
+        name @output @filter(op: "=", value: ["$league"])
+#        image_url @output
+#        url @output
+#        modified_at @output
+
+        series {
+#            serie_id: id @output
+            full_name @output
+            year @output @filter(op: "=", value: ["$year"])
+
+            tournaments {
+                tournament_name: name @output
+#                tier @output
+#                video_game {
+#                    video_game_name: name @output
+#                    current_version @output
+#                }
+#                teams {
+#                    team_name: name @output
+#                    players {
+#                        player_name: name @output
+#                        role @output
+#                    }
+#                }
+#                matches {
+#                    match_name: name @output
+#                    match_status @output
+#                    winner {
+#                        ... on WinnerTeam {
+#                            team {
+#                                team_name: name @output
+#                            }
+#                        }
+#                    }
+#                }
+            }
+        }
+    }
+}
