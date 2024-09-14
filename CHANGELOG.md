@@ -9,6 +9,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.1.0](https://github.com/ansg191/trustfall-pandascore-adapter/releases/tag/v0.1.0) - 2024-09-14
 
-### Other
-
-- Initial Commit
+Initial Release
