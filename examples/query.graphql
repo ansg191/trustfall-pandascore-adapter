@@ -11,8 +11,12 @@
             full_name @output
             year @output @filter(op: "=", value: ["$year"])
 
-            tournaments {
-                tournament_name: name @output
+            league {
+                name2: name @output
+            }
+
+#            tournaments {
+#                tournament_name: name @output
 #                tier @output
 #                video_game {
 #                    video_game_name: name @output
@@ -36,7 +40,7 @@
 #                        }
 #                    }
 #                }
-            }
+#            }
         }
     }
 }

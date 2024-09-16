@@ -76,6 +76,7 @@ pub(super) fn resolve_series_edge<'a, V: AsVertex<Vertex> + 'a>(
     match edge_name {
         "tournaments" => series::tournaments(adapter, contexts),
         "winner" => series::winner(adapter, contexts),
+        "league" => series::league(adapter, contexts),
         _ => {
             unreachable!("attempted to resolve unexpected edge '{edge_name}' on type 'Series'")
         }
@@ -143,6 +144,27 @@ mod series {
             resolve_winner(&vertex.winner, adapter)
         })
     }
+
+    pub(super) fn league<'a, V>(
+        adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
+        contexts: ContextIterator<'a, V>,
+    ) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>>
+    where
+        V: AsVertex<Vertex> + 'a,
+    {
+        resolve_neighbors_with(contexts, move |vertex| {
+            let vertex = vertex
+                .as_series()
+                .expect("conversion failed, vertex was not a Series");
+            let adapter = Arc::clone(&adapter);
+            Box::new(
+                adapter
+                    .execute(all::leagues::GetLeague::from(vertex.league.id))
+                    .map(Vertex::League)
+                    .into_iter(),
+            )
+        })
+    }
 }
 
 pub(super) fn resolve_tournament_edge<'a, V: AsVertex<Vertex> + 'a>(
@@ -156,6 +178,8 @@ pub(super) fn resolve_tournament_edge<'a, V: AsVertex<Vertex> + 'a>(
         "matches" => tournament::matches(adapter, contexts),
         "video_game" => tournament::video_game(contexts),
         "winner" => tournament::winner(adapter, contexts),
+        "league" => tournament::league(adapter, contexts),
+        "series" => tournament::series(adapter, contexts),
         _ => {
             unreachable!("attempted to resolve unexpected edge '{edge_name}' on type 'Tournament'")
         }
@@ -269,6 +293,48 @@ mod tournament {
             resolve_winner(&vertex.winner, adapter)
         })
     }
+
+    pub(super) fn league<'a, V>(
+        adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
+        contexts: ContextIterator<'a, V>,
+    ) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>>
+    where
+        V: AsVertex<Vertex> + 'a,
+    {
+        resolve_neighbors_with(contexts, move |vertex| {
+            let vertex = vertex
+                .as_tournament()
+                .expect("conversion failed, vertex was not a Tournament");
+            let adapter = Arc::clone(&adapter);
+            Box::new(
+                adapter
+                    .execute(all::leagues::GetLeague::from(vertex.league.id))
+                    .map(Vertex::League)
+                    .into_iter(),
+            )
+        })
+    }
+
+    pub(super) fn series<'a, V>(
+        adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
+        contexts: ContextIterator<'a, V>,
+    ) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>>
+    where
+        V: AsVertex<Vertex> + 'a,
+    {
+        resolve_neighbors_with(contexts, move |vertex| {
+            let vertex = vertex
+                .as_tournament()
+                .expect("conversion failed, vertex was not a Tournament");
+            let adapter = Arc::clone(&adapter);
+            Box::new(
+                adapter
+                    .execute(all::series::GetSeries::from(vertex.serie.id))
+                    .map(Vertex::Series)
+                    .into_iter(),
+            )
+        })
+    }
 }
 
 pub(super) fn resolve_team_edge<'a, V: AsVertex<Vertex> + 'a>(
@@ -327,6 +393,9 @@ pub(super) fn resolve_match_edge<'a, V: AsVertex<Vertex> + 'a>(
 ) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>> {
     match edge_name {
         "winner" => r#match::winner(adapter, contexts),
+        "league" => r#match::league(adapter, contexts),
+        "series" => r#match::series(adapter, contexts),
+        "tournament" => r#match::tournament(adapter, contexts),
         _ => {
             unreachable!("attempted to resolve unexpected edge '{edge_name}' on type 'Match'")
         }
@@ -336,7 +405,7 @@ pub(super) fn resolve_match_edge<'a, V: AsVertex<Vertex> + 'a>(
 mod r#match {
     use std::sync::Arc;
 
-    use pandascore::ClientTransport;
+    use pandascore::{endpoint::all, ClientTransport};
     use trustfall::provider::{
         resolve_neighbors_with, AsVertex, ContextIterator, ContextOutcomeIterator, VertexIterator,
     };
@@ -356,6 +425,69 @@ mod r#match {
                 .expect("conversion failed, vertex was not a Match");
             let adapter = Arc::clone(&adapter);
             resolve_winner(&vertex.winner, adapter)
+        })
+    }
+
+    pub(super) fn league<'a, V>(
+        adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
+        contexts: ContextIterator<'a, V>,
+    ) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>>
+    where
+        V: AsVertex<Vertex> + 'a,
+    {
+        resolve_neighbors_with(contexts, move |vertex| {
+            let vertex = vertex
+                .as_match()
+                .expect("conversion failed, vertex was not a Match");
+            let adapter = Arc::clone(&adapter);
+            Box::new(
+                adapter
+                    .execute(all::leagues::GetLeague::from(vertex.league.id))
+                    .map(Vertex::League)
+                    .into_iter(),
+            )
+        })
+    }
+
+    pub(super) fn series<'a, V>(
+        adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
+        contexts: ContextIterator<'a, V>,
+    ) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>>
+    where
+        V: AsVertex<Vertex> + 'a,
+    {
+        resolve_neighbors_with(contexts, move |vertex| {
+            let vertex = vertex
+                .as_match()
+                .expect("conversion failed, vertex was not a Match");
+            let adapter = Arc::clone(&adapter);
+            Box::new(
+                adapter
+                    .execute(all::series::GetSeries::from(vertex.serie.id))
+                    .map(Vertex::Series)
+                    .into_iter(),
+            )
+        })
+    }
+
+    pub(super) fn tournament<'a, V>(
+        adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
+        contexts: ContextIterator<'a, V>,
+    ) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>>
+    where
+        V: AsVertex<Vertex> + 'a,
+    {
+        resolve_neighbors_with(contexts, move |vertex| {
+            let vertex = vertex
+                .as_match()
+                .expect("conversion failed, vertex was not a Match");
+            let adapter = Arc::clone(&adapter);
+            Box::new(
+                adapter
+                    .execute(all::tournament::GetTournament::from(vertex.tournament_id))
+                    .map(|t| Vertex::Tournament(Box::new(t)))
+                    .into_iter(),
+            )
         })
     }
 }
