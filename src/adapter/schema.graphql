@@ -61,7 +61,6 @@ type League {
 
 type Series {
     id: ID!
-    league_id: ID!
 
     modified_at: String!
     begin_at: String
@@ -75,13 +74,12 @@ type Series {
     winner: Winner
     year: Int
 
+    league: League!
     tournaments: [Tournament!]
 }
 
 type Tournament {
     id: ID!
-    series_id: ID!
-    league_id: ID!
 
     modified_at: String!
     begin_at: String
@@ -97,6 +95,8 @@ type Tournament {
     tier: String
     winner: Winner
 
+    league: League!
+    series: Series!
     #rosters: [Roster!]
     matches: [Match!]
     teams: [Team!]
@@ -105,9 +105,6 @@ type Tournament {
 
 type Match {
     id: ID!
-    tournament_id: ID!
-    series_id: ID!
-    league_id: ID!
 
     modified_at: String!
     begin_at: String
@@ -126,6 +123,10 @@ type Match {
 
     name: String!
     slug: String!
+
+    league: League!
+    series: Series!
+    tournament: Tournament!
 
     winner: Winner
 
