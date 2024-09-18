@@ -159,6 +159,8 @@ type Player {
     nationality: String
     role: String
     slug: String
+
+    current_team: Team
 }
 
 type VideoGame {

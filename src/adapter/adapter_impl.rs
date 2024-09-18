@@ -94,6 +94,12 @@ impl<'a, T: ClientTransport + 'a> trustfall::provider::BasicAdapter<'a> for Adap
                 edge_name,
                 parameters,
             ),
+            "Player" => super::edges::resolve_player_edge(
+                Arc::clone(&self.0),
+                contexts,
+                edge_name,
+                parameters,
+            ),
             "Match" => super::edges::resolve_match_edge(
                 Arc::clone(&self.0),
                 contexts,
