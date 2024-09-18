@@ -385,6 +385,55 @@ mod team {
     }
 }
 
+pub(super) fn resolve_player_edge<'a, V: AsVertex<Vertex> + 'a>(
+    adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
+    contexts: ContextIterator<'a, V>,
+    edge_name: &str,
+    _parameters: &EdgeParameters,
+) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>> {
+    match edge_name {
+        "current_team" => player::current_team(adapter, contexts),
+        _ => {
+            unreachable!("attempted to resolve unexpected edge '{edge_name}' on type 'Player'")
+        }
+    }
+}
+
+mod player {
+    use std::sync::Arc;
+
+    use pandascore::{endpoint::all, ClientTransport};
+    use trustfall::provider::{
+        resolve_neighbors_with, AsVertex, ContextIterator, ContextOutcomeIterator, VertexIterator,
+    };
+
+    use crate::adapter::{AdapterInner, Vertex};
+
+    pub(super) fn current_team<'a, V>(
+        adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
+        contexts: ContextIterator<'a, V>,
+    ) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>>
+    where
+        V: AsVertex<Vertex> + 'a,
+    {
+        resolve_neighbors_with(contexts, move |vertex| {
+            let vertex = vertex
+                .as_player()
+                .expect("conversion failed, vertex was not a Player");
+            let adapter = Arc::clone(&adapter);
+            let id = vertex.current_team.as_ref().map(|t| t.id);
+            Box::new(
+                id.and_then(|id| {
+                    adapter
+                        .execute(all::teams::GetTeam::from(id))
+                        .map(Vertex::Team)
+                })
+                .into_iter(),
+            )
+        })
+    }
+}
+
 pub(super) fn resolve_match_edge<'a, V: AsVertex<Vertex> + 'a>(
     adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
     contexts: ContextIterator<'a, V>,
