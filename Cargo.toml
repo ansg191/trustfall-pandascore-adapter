@@ -15,7 +15,7 @@ log = ["dep:log"]
 [dependencies]
 compact_str = "0.8.0"
 log = { version = "0.4", optional = true }
-pandascore = "0.3.2"
+pandascore = "0.4.0"
 thiserror = "1"
 time = { version = "0.3", features = ["formatting"] }
 tokio = { version = "1", features = ["macros", "rt"] }

@@ -192,6 +192,7 @@ pub(super) fn resolve_winner_property<'a, V: AsVertex<Vertex> + 'a>(
                 Vertex::Winner(v) => match v {
                     Winner::Team { id, .. } => id.into_field_value(),
                     Winner::Player { id, .. } => id.into_field_value(),
+                    _ => unreachable!("unexpected winner variant"),
                 },
                 _ => unreachable!("expected active vertex to be '{}'", stringify!(Winner)),
             });
