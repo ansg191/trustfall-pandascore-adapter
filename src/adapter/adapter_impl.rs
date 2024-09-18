@@ -25,7 +25,70 @@ impl<'a, T: ClientTransport + 'a> trustfall::provider::BasicAdapter<'a> for Adap
                     .get("game")
                     .expect("failed to find parameter 'game' when resolving 'Leagues' starting vertices")
                     .as_str();
-                super::entrypoints::leagues(Arc::clone(&self.0), game)
+                let search = parameters
+                    .get("search")
+                    .expect("failed to find parameter 'search' when resolving 'Leagues' starting vertices")
+                    .as_str();
+                super::entrypoints::leagues(Arc::clone(&self.0), game, search)
+            }
+            "Series" => {
+                let game = parameters
+                    .get("game")
+                    .expect(
+                        "failed to find parameter 'game' when resolving 'Series' starting vertices",
+                    )
+                    .as_str();
+                let search = parameters
+                    .get("search")
+                    .expect("failed to find parameter 'search' when resolving 'Series' starting vertices")
+                    .as_str();
+                super::entrypoints::series(Arc::clone(&self.0), game, search)
+            }
+            "Tournaments" => {
+                let game = parameters
+                    .get("game")
+                    .expect("failed to find parameter 'game' when resolving 'Tournaments' starting vertices")
+                    .as_str();
+                let search = parameters
+                    .get("search")
+                    .expect("failed to find parameter 'search' when resolving 'Tournaments' starting vertices")
+                    .as_str();
+                super::entrypoints::tournaments(Arc::clone(&self.0), game, search)
+            }
+            "Matches" => {
+                let game = parameters
+                    .get("game")
+                    .expect("failed to find parameter 'game' when resolving 'Matches' starting vertices")
+                    .as_str();
+                let search = parameters
+                    .get("search")
+                    .expect("failed to find parameter 'search' when resolving 'Matches' starting vertices")
+                    .as_str();
+                super::entrypoints::matches(Arc::clone(&self.0), game, search)
+            }
+            "Teams" => {
+                let game = parameters
+                    .get("game")
+                    .expect(
+                        "failed to find parameter 'game' when resolving 'Teams' starting vertices",
+                    )
+                    .as_str();
+                let search = parameters
+                    .get("search")
+                    .expect("failed to find parameter 'search' when resolving 'Teams' starting vertices")
+                    .as_str();
+                super::entrypoints::teams(Arc::clone(&self.0), game, search)
+            }
+            "Players" => {
+                let game = parameters
+                    .get("game")
+                    .expect("failed to find parameter 'game' when resolving 'Players' starting vertices")
+                    .as_str();
+                let search = parameters
+                    .get("search")
+                    .expect("failed to find parameter 'search' when resolving 'Players' starting vertices")
+                    .as_str();
+                super::entrypoints::players(Arc::clone(&self.0), game, search)
             }
             _ => unreachable!(
                 "attempted to resolve starting vertices for unexpected edge name: {edge_name}"
