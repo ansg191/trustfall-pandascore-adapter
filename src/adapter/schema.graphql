@@ -45,7 +45,61 @@ type RootSchemaQuery {
         The game to get leagues for.
         """
         game: String
+        """
+        The search string to look for.
+        """
+        search: String
     ): [League!]
+    Series(
+        """
+        The game to get series for.
+        """
+        game: String
+        """
+        The search string to look for.
+        """
+        search: String
+    ): [Series!]
+    Tournaments(
+        """
+        The game to get tournaments for.
+        """
+        game: String
+        """
+        The search string to look for.
+        """
+        search: String
+    ): [Tournament!]
+    Matches(
+        """
+        The game to get matches for.
+        """
+        game: String
+        """
+        The search string to look for.
+        """
+        search: String
+    ): [Match!]
+    Teams(
+        """
+        The game to get teams for.
+        """
+        game: String
+        """
+        The search string to look for.
+        """
+        search: String
+    ): [Team!]
+    Players(
+        """
+        The game to get players for.
+        """
+        game: String
+        """
+        The search string to look for.
+        """
+        search: String
+    ): [Player!]
 }
 
 type League {

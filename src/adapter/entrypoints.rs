@@ -15,43 +15,183 @@ use crate::{
 pub(super) fn leagues<'a, T: ClientTransport + 'a>(
     adapter: Arc<AdapterInner<T>>,
     game: Option<&str>,
+    search: Option<&str>,
 ) -> VertexIterator<'a, Vertex> {
-    let leagues = match game {
-        Some("lol") => Some(lol_leagues(adapter)),
+    let mut init = CollectionOptions::new();
+    if let Some(search) = search {
+        init = init.search("name", search);
+    }
+
+    match game {
+        Some("lol") => Box::new(
+            PaginationIterator::new(adapter, lol::leagues::ListLeagues(init)).map(Vertex::League),
+        ),
         Some(g) => {
             adapter
                 .errors()
                 .push(AdapterError::InvalidGame(g.to_string()));
-            None
+            Box::new(std::iter::empty())
         }
-        None => Some(all_leagues(adapter)),
-    };
-
-    let Some(leagues) = leagues else {
-        return Box::new(std::iter::empty());
-    };
-
-    leagues
+        None => Box::new(
+            PaginationIterator::new(adapter, all::leagues::ListLeagues(init)).map(Vertex::League),
+        ),
+    }
 }
 
-fn all_leagues<'a, T: ClientTransport + 'a>(
+pub(super) fn series<'a, T: ClientTransport + 'a>(
     adapter: Arc<AdapterInner<T>>,
+    game: Option<&str>,
+    search: Option<&str>,
 ) -> VertexIterator<'a, Vertex> {
-    Box::new(
-        PaginationIterator::new(adapter, CollectionOptions::default(), |adapter, next| {
-            adapter.execute(all::leagues::ListLeagues(next))
-        })
-        .map(Vertex::League),
-    )
+    let mut init = CollectionOptions::new();
+    if let Some(search) = search {
+        init = init.search("name", search);
+    }
+
+    match game {
+        Some("lol") => Box::new(
+            PaginationIterator::new(
+                adapter,
+                lol::series::ListSeries::builder().options(init).build(),
+            )
+            .map(Vertex::Series),
+        ),
+        Some(g) => {
+            adapter
+                .errors()
+                .push(AdapterError::InvalidGame(g.to_string()));
+            Box::new(std::iter::empty())
+        }
+        None => Box::new(
+            PaginationIterator::new(
+                adapter,
+                all::series::ListSeries::builder().options(init).build(),
+            )
+            .map(Vertex::Series),
+        ),
+    }
 }
 
-fn lol_leagues<'a, T: ClientTransport + 'a>(
+pub(super) fn tournaments<'a, T: ClientTransport + 'a>(
     adapter: Arc<AdapterInner<T>>,
+    game: Option<&str>,
+    search: Option<&str>,
 ) -> VertexIterator<'a, Vertex> {
-    Box::new(
-        PaginationIterator::new(adapter, CollectionOptions::default(), |adapter, next| {
-            adapter.execute(lol::leagues::ListLeagues(next))
-        })
-        .map(Vertex::League),
-    )
+    let mut init = CollectionOptions::new();
+    if let Some(search) = search {
+        init = init.search("name", search);
+    }
+
+    match game {
+        Some("lol") => Box::new(
+            PaginationIterator::new(
+                adapter,
+                lol::tournaments::ListTournaments::builder()
+                    .options(init)
+                    .build(),
+            )
+            .map(|x| Vertex::Tournament(Box::new(x))),
+        ),
+        Some(g) => {
+            adapter
+                .errors()
+                .push(AdapterError::InvalidGame(g.to_string()));
+            Box::new(std::iter::empty())
+        }
+        None => Box::new(
+            PaginationIterator::new(
+                adapter,
+                all::tournament::ListTournaments::builder()
+                    .options(init)
+                    .build(),
+            )
+            .map(|x| Vertex::Tournament(Box::new(x))),
+        ),
+    }
+}
+
+pub(super) fn matches<'a, T: ClientTransport + 'a>(
+    adapter: Arc<AdapterInner<T>>,
+    game: Option<&str>,
+    search: Option<&str>,
+) -> VertexIterator<'a, Vertex> {
+    let mut init = CollectionOptions::new();
+    if let Some(search) = search {
+        init = init.search("name", search);
+    }
+
+    match game {
+        Some("lol") => Box::new(
+            PaginationIterator::new(
+                adapter,
+                lol::matches::ListMatches::builder().options(init).build(),
+            )
+            .map(|x| Vertex::Match(Box::new(x))),
+        ),
+        Some(g) => {
+            adapter
+                .errors()
+                .push(AdapterError::InvalidGame(g.to_string()));
+            Box::new(std::iter::empty())
+        }
+        None => Box::new(
+            PaginationIterator::new(
+                adapter,
+                all::matches::ListMatches::builder().options(init).build(),
+            )
+            .map(|x| Vertex::Match(Box::new(x))),
+        ),
+    }
+}
+
+pub(super) fn teams<'a, T: ClientTransport + 'a>(
+    adapter: Arc<AdapterInner<T>>,
+    game: Option<&str>,
+    search: Option<&str>,
+) -> VertexIterator<'a, Vertex> {
+    let mut init = CollectionOptions::new();
+    if let Some(search) = search {
+        init = init.search("name", search);
+    }
+
+    match game {
+        Some("lol") => Box::new(
+            PaginationIterator::new(adapter, lol::teams::ListTeams(init)).map(Vertex::Team),
+        ),
+        Some(g) => {
+            adapter
+                .errors()
+                .push(AdapterError::InvalidGame(g.to_string()));
+            Box::new(std::iter::empty())
+        }
+        None => Box::new(
+            PaginationIterator::new(adapter, all::teams::ListTeams(init)).map(Vertex::Team),
+        ),
+    }
+}
+
+pub(super) fn players<'a, T: ClientTransport + 'a>(
+    adapter: Arc<AdapterInner<T>>,
+    game: Option<&str>,
+    search: Option<&str>,
+) -> VertexIterator<'a, Vertex> {
+    let mut init = CollectionOptions::new();
+    if let Some(search) = search {
+        init = init.search("name", search);
+    }
+
+    match game {
+        Some("lol") => Box::new(
+            PaginationIterator::new(adapter, lol::players::ListPlayers(init)).map(Vertex::Player),
+        ),
+        Some(g) => {
+            adapter
+                .errors()
+                .push(AdapterError::InvalidGame(g.to_string()));
+            Box::new(std::iter::empty())
+        }
+        None => Box::new(
+            PaginationIterator::new(adapter, all::players::ListPlayers(init)).map(Vertex::Player),
+        ),
+    }
 }

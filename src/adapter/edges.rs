@@ -25,10 +25,7 @@ pub(super) fn resolve_league_edge<'a, V: AsVertex<Vertex> + 'a>(
 mod league {
     use std::sync::Arc;
 
-    use pandascore::{
-        endpoint::{all, CollectionOptions},
-        ClientTransport,
-    };
+    use pandascore::{endpoint::all, ClientTransport};
     use trustfall::provider::{
         resolve_neighbors_with, AsVertex, ContextIterator, ContextOutcomeIterator, VertexIterator,
     };
@@ -51,15 +48,7 @@ mod league {
             Box::new(
                 PaginationIterator::new(
                     Arc::clone(&adapter),
-                    CollectionOptions::default(),
-                    move |adapter, next| {
-                        adapter.execute(
-                            all::leagues::ListLeagueSeries::builder()
-                                .id(id)
-                                .options(next)
-                                .build(),
-                        )
-                    },
+                    all::leagues::ListLeagueSeries::builder().id(id).build(),
                 )
                 .map(Vertex::Series),
             )
@@ -86,10 +75,7 @@ pub(super) fn resolve_series_edge<'a, V: AsVertex<Vertex> + 'a>(
 mod series {
     use std::sync::Arc;
 
-    use pandascore::{
-        endpoint::{all, CollectionOptions},
-        ClientTransport,
-    };
+    use pandascore::{endpoint::all, ClientTransport};
     use trustfall::provider::{
         resolve_neighbors_with, AsVertex, ContextIterator, ContextOutcomeIterator, VertexIterator,
     };
@@ -114,15 +100,7 @@ mod series {
             Box::new(
                 PaginationIterator::new(
                     Arc::clone(&adapter),
-                    CollectionOptions::default(),
-                    move |adapter, next| {
-                        adapter.execute(
-                            all::series::ListSeriesTournaments::builder()
-                                .id(id)
-                                .options(next)
-                                .build(),
-                        )
-                    },
+                    all::series::ListSeriesTournaments::builder().id(id).build(),
                 )
                 .map(|x| Vertex::Tournament(Box::new(x))),
             )
@@ -189,10 +167,7 @@ pub(super) fn resolve_tournament_edge<'a, V: AsVertex<Vertex> + 'a>(
 mod tournament {
     use std::sync::Arc;
 
-    use pandascore::{
-        endpoint::{all, CollectionOptions},
-        ClientTransport,
-    };
+    use pandascore::{endpoint::all, ClientTransport};
     use trustfall::provider::{
         resolve_neighbors_with, AsVertex, ContextIterator, ContextOutcomeIterator, VertexIterator,
     };
@@ -217,15 +192,9 @@ mod tournament {
             Box::new(
                 PaginationIterator::new(
                     Arc::clone(&adapter),
-                    CollectionOptions::default(),
-                    move |adapter, next| {
-                        adapter.execute(
-                            all::tournament::ListTournamentTeams::builder()
-                                .id(id)
-                                .options(next)
-                                .build(),
-                        )
-                    },
+                    all::tournament::ListTournamentTeams::builder()
+                        .id(id)
+                        .build(),
                 )
                 .map(Vertex::Team),
             )
@@ -247,15 +216,9 @@ mod tournament {
             Box::new(
                 PaginationIterator::new(
                     Arc::clone(&adapter),
-                    CollectionOptions::default(),
-                    move |adapter, next| {
-                        adapter.execute(
-                            all::tournament::ListTournamentMatches::builder()
-                                .id(id)
-                                .options(next)
-                                .build(),
-                        )
-                    },
+                    all::tournament::ListTournamentMatches::builder()
+                        .id(id)
+                        .build(),
                 )
                 .map(|x| Vertex::Match(Box::new(x))),
             )
