@@ -81,6 +81,7 @@ impl IntoFieldValue for MatchType {
             MatchType::FirstTo => FieldValue::String("first_to".into()),
             MatchType::OwBestOf => FieldValue::String("ow_best_of".into()),
             MatchType::RedBullHomeGround => FieldValue::String("red_bull_home_ground".into()),
+            _ => FieldValue::String("unknown".into()),
         }
     }
 }
@@ -93,6 +94,7 @@ impl IntoFieldValue for MatchStatus {
             MatchStatus::NotStarted => FieldValue::String("not_started".into()),
             MatchStatus::Postponed => FieldValue::String("postponed".into()),
             MatchStatus::Running => FieldValue::String("running".into()),
+            _ => FieldValue::String("unknown".into()),
         }
     }
 }
