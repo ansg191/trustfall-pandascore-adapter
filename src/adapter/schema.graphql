@@ -198,6 +198,11 @@ type Team {
     slug: String
 
     players: [Player!]
+
+    leagues: [League!]
+    series: [Series!]
+    tournaments: [Tournament!]
+    matches: [Match!]
 }
 
 type Player {
@@ -215,6 +220,11 @@ type Player {
     slug: String
 
     current_team: Team
+
+    leagues: [League!]
+    series: [Series!]
+    tournaments: [Tournament!]
+    matches: [Match!]
 }
 
 type VideoGame {
