@@ -1,7 +1,7 @@
 [package]
 name = "trustfall-pandascore-adapter"
 description = "A trustfall adapter for the Pandascore API"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Anshul Gupta <ansg191@anshulg.com>"]
 repository = "https://github.com/ansg191/trustfall-pandascore-adapter"
 documentation = "https://docs.rs/trustfall-pandascore-adapter"
