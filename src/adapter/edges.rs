@@ -308,6 +308,10 @@ pub(super) fn resolve_team_edge<'a, V: AsVertex<Vertex> + 'a>(
 ) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>> {
     match edge_name {
         "players" => team::players(adapter, contexts),
+        "leagues" => team::leagues(adapter, contexts),
+        "series" => team::series(adapter, contexts),
+        "tournaments" => team::tournaments(adapter, contexts),
+        "matches" => team::matches(adapter, contexts),
         _ => {
             unreachable!("attempted to resolve unexpected edge '{edge_name}' on type 'Team'")
         }
@@ -322,7 +326,10 @@ mod team {
         resolve_neighbors_with, AsVertex, ContextIterator, ContextOutcomeIterator, VertexIterator,
     };
 
-    use crate::adapter::{AdapterInner, Vertex};
+    use crate::{
+        adapter::{AdapterInner, Vertex},
+        pagination::PaginationIterator,
+    };
 
     pub(super) fn players<'a, V>(
         adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
@@ -346,6 +353,94 @@ mod team {
             )
         })
     }
+
+    pub(super) fn leagues<'a, V>(
+        adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
+        contexts: ContextIterator<'a, V>,
+    ) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>>
+    where
+        V: AsVertex<Vertex> + 'a,
+    {
+        resolve_neighbors_with(contexts, move |vertex| {
+            let vertex = vertex
+                .as_team()
+                .expect("conversion failed, vertex was not a Team");
+            let id = vertex.id;
+            Box::new(
+                PaginationIterator::new(
+                    Arc::clone(&adapter),
+                    all::teams::ListTeamLeagues::builder().id(id).build(),
+                )
+                .map(Vertex::League),
+            )
+        })
+    }
+
+    pub(super) fn series<'a, V>(
+        adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
+        contexts: ContextIterator<'a, V>,
+    ) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>>
+    where
+        V: AsVertex<Vertex> + 'a,
+    {
+        resolve_neighbors_with(contexts, move |vertex| {
+            let vertex = vertex
+                .as_team()
+                .expect("conversion failed, vertex was not a Team");
+            let id = vertex.id;
+            Box::new(
+                PaginationIterator::new(
+                    Arc::clone(&adapter),
+                    all::teams::ListTeamSeries::builder().id(id).build(),
+                )
+                .map(Vertex::Series),
+            )
+        })
+    }
+
+    pub(super) fn tournaments<'a, V>(
+        adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
+        contexts: ContextIterator<'a, V>,
+    ) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>>
+    where
+        V: AsVertex<Vertex> + 'a,
+    {
+        resolve_neighbors_with(contexts, move |vertex| {
+            let vertex = vertex
+                .as_team()
+                .expect("conversion failed, vertex was not a Team");
+            let id = vertex.id;
+            Box::new(
+                PaginationIterator::new(
+                    Arc::clone(&adapter),
+                    all::teams::ListTeamTournaments::builder().id(id).build(),
+                )
+                .map(|x| Vertex::Tournament(Box::new(x))),
+            )
+        })
+    }
+
+    pub(super) fn matches<'a, V>(
+        adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
+        contexts: ContextIterator<'a, V>,
+    ) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>>
+    where
+        V: AsVertex<Vertex> + 'a,
+    {
+        resolve_neighbors_with(contexts, move |vertex| {
+            let vertex = vertex
+                .as_team()
+                .expect("conversion failed, vertex was not a Team");
+            let id = vertex.id;
+            Box::new(
+                PaginationIterator::new(
+                    Arc::clone(&adapter),
+                    all::teams::ListTeamMatches::builder().id(id).build(),
+                )
+                .map(|x| Vertex::Match(Box::new(x))),
+            )
+        })
+    }
 }
 
 pub(super) fn resolve_player_edge<'a, V: AsVertex<Vertex> + 'a>(
@@ -356,6 +451,10 @@ pub(super) fn resolve_player_edge<'a, V: AsVertex<Vertex> + 'a>(
 ) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>> {
     match edge_name {
         "current_team" => player::current_team(adapter, contexts),
+        "leagues" => player::leagues(adapter, contexts),
+        "series" => player::series(adapter, contexts),
+        "tournaments" => player::tournaments(adapter, contexts),
+        "matches" => player::matches(adapter, contexts),
         _ => {
             unreachable!("attempted to resolve unexpected edge '{edge_name}' on type 'Player'")
         }
@@ -370,7 +469,10 @@ mod player {
         resolve_neighbors_with, AsVertex, ContextIterator, ContextOutcomeIterator, VertexIterator,
     };
 
-    use crate::adapter::{AdapterInner, Vertex};
+    use crate::{
+        adapter::{AdapterInner, Vertex},
+        pagination::PaginationIterator,
+    };
 
     pub(super) fn current_team<'a, V>(
         adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
@@ -392,6 +494,96 @@ mod player {
                         .map(Vertex::Team)
                 })
                 .into_iter(),
+            )
+        })
+    }
+
+    pub(super) fn leagues<'a, V>(
+        adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
+        contexts: ContextIterator<'a, V>,
+    ) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>>
+    where
+        V: AsVertex<Vertex> + 'a,
+    {
+        resolve_neighbors_with(contexts, move |vertex| {
+            let vertex = vertex
+                .as_player()
+                .expect("conversion failed, vertex was not a Player");
+            let id = vertex.id;
+            Box::new(
+                PaginationIterator::new(
+                    Arc::clone(&adapter),
+                    all::players::ListPlayerLeagues::builder().id(id).build(),
+                )
+                .map(Vertex::League),
+            )
+        })
+    }
+
+    pub(super) fn series<'a, V>(
+        adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
+        contexts: ContextIterator<'a, V>,
+    ) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>>
+    where
+        V: AsVertex<Vertex> + 'a,
+    {
+        resolve_neighbors_with(contexts, move |vertex| {
+            let vertex = vertex
+                .as_player()
+                .expect("conversion failed, vertex was not a Player");
+            let id = vertex.id;
+            Box::new(
+                PaginationIterator::new(
+                    Arc::clone(&adapter),
+                    all::players::ListPlayerSeries::builder().id(id).build(),
+                )
+                .map(Vertex::Series),
+            )
+        })
+    }
+
+    pub(super) fn tournaments<'a, V>(
+        adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
+        contexts: ContextIterator<'a, V>,
+    ) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>>
+    where
+        V: AsVertex<Vertex> + 'a,
+    {
+        resolve_neighbors_with(contexts, move |vertex| {
+            let vertex = vertex
+                .as_player()
+                .expect("conversion failed, vertex was not a Player");
+            let id = vertex.id;
+            Box::new(
+                PaginationIterator::new(
+                    Arc::clone(&adapter),
+                    all::players::ListPlayerTournaments::builder()
+                        .id(id)
+                        .build(),
+                )
+                .map(|x| Vertex::Tournament(Box::new(x))),
+            )
+        })
+    }
+
+    pub(super) fn matches<'a, V>(
+        adapter: Arc<AdapterInner<impl ClientTransport + 'a>>,
+        contexts: ContextIterator<'a, V>,
+    ) -> ContextOutcomeIterator<'a, V, VertexIterator<'a, Vertex>>
+    where
+        V: AsVertex<Vertex> + 'a,
+    {
+        resolve_neighbors_with(contexts, move |vertex| {
+            let vertex = vertex
+                .as_player()
+                .expect("conversion failed, vertex was not a Player");
+            let id = vertex.id;
+            Box::new(
+                PaginationIterator::new(
+                    Arc::clone(&adapter),
+                    all::players::ListPlayerMatches::builder().id(id).build(),
+                )
+                .map(|x| Vertex::Match(Box::new(x))),
             )
         })
     }
