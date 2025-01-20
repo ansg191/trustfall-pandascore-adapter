@@ -19,7 +19,7 @@ pandascore = "0.5.3"
 thiserror = "1"
 time = { version = "0.3", features = ["formatting"] }
 tokio = { version = "1", features = ["macros", "rt"] }
-trustfall = "0.7.1"
+trustfall = "0.8.1"
 
 [dev-dependencies]
 anyhow = "1"
